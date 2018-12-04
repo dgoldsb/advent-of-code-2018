@@ -12,6 +12,12 @@ In the example above, Guard #10 spent the most minutes asleep, a total of 50 min
 While this example listed the entries in chronological order, your entries are in the order you found them. You'll need to organize them before they can be analyzed.
 
 What is the ID of the guard you chose multiplied by the minute you chose? (In the above example, the answer would be 10 * 24 = 240.)
+
+Strategy 2: Of all guards, which guard is most frequently asleep on the same minute?
+
+In the example above, Guard #99 spent minute 45 asleep more than any other guard or minute - three times in total. (In all other cases, any guard spent any minute asleep at most twice.)
+
+What is the ID of the guard you chose multiplied by the minute you chose? (In the above example, the answer would be 99 * 45 = 4455.)
 """
 
 from datetime import datetime, timedelta
@@ -54,12 +60,12 @@ if __name__ == '__main__':
         if match:
             # Add minutes to the falling asleep timestamp until it match the current.
             while ts != falling_asleep_ts: # TODO: which minute does he wake?
-                falling_asleep_ts = falling_asleep_ts + timedelta(minutes=1)
                 minute = int(falling_asleep_ts.strftime('%M'))
                 if minute not in list(sleeping_schedule[current_guard].keys()):
                     sleeping_schedule[current_guard][minute] = 1
                 else:
                     sleeping_schedule[current_guard][minute] += 1
+                falling_asleep_ts = falling_asleep_ts + timedelta(minutes=1)
 
     # Calculate the most sleepy guard.
     def sleepsum(x):
@@ -82,3 +88,14 @@ if __name__ == '__main__':
             sleepiest_minute[1] = sleeping_schedule[sleepiest_guard[0]][key]
 
     print('Answer 1 is {}*{}={}.'.format(sleepiest_guard[0], sleepiest_minute[0], sleepiest_guard[0] * sleepiest_minute[0]))
+
+    # Find the most consistently sleepy guard.
+    sleepiest_consistent = [-1, -1, -1]
+    for guard in sleeping_schedule.keys():
+        for minute in sleeping_schedule[guard].keys():
+            if sleeping_schedule[guard][minute] > sleepiest_consistent[2]:
+                sleepiest_consistent[0] = guard
+                sleepiest_consistent[1] = minute
+                sleepiest_consistent[2] = sleeping_schedule[guard][minute]
+
+    print('Answer 2 is {}*{}={}.'.format(sleepiest_consistent[0], sleepiest_consistent[1], sleepiest_consistent[0]*sleepiest_consistent[1]))
