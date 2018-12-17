@@ -39,29 +39,46 @@ For example, suppose there are 9 players. After the marble with value 0 is place
 The goal is to be the player with the highest score after the last marble is used up. Assuming the example above ends after the marble numbered 25, the winning score is 23+9=32 (because player 5 kept marble 23 and removed marble 9, while no other player got any points in this very short example game).
 """
 
-def next_index(index, length):
-    if index + 1 == length:
-        return 0
-    else:
-        return index + 1
+class Marble:
+    def __init__(self, value):
+        self.value = value
+        self.previous = None
+        self.next = None
+
 
 def run_game(players, marbles):
     scores = dict()
     for index in range(players):
         scores[index] = 0
 
-    current_index = 0
-    sequence = [0]
+    curr = Marble(0)
+    curr.previous = curr
+    curr.next = curr
 
     for marble in range(1, marbles + 1):
         if marble % 23 != 0:
-            current_index = next_index(current_index, len(sequence))
-            current_index += 1
-            sequence.insert(current_index, marble)
+            new = Marble(marble)
+
+            # Insert the marble.
+            new.next = curr.next.next
+            new.previous = curr.next
+            curr.next.next.previous = new
+            curr.next.next = new
+
+            # Set the new current marble.
+            curr = new
         else:
+            for _ in range(7):
+                curr = curr.previous
+
+            # Delete this marble.
+            curr.next.previous = curr.previous
+            curr.previous.next = curr.next
+
+            # Add values and delete.
             current_player = marble % players
-            current_index = current_index - 7 if current_index >= 7 else current_index + len(sequence) - 7
-            scores[current_player] += marble + sequence.pop(current_index)
+            scores[current_player] += marble + curr.value
+            curr = curr.next
 
     return scores
 
@@ -79,3 +96,11 @@ if __name__ == '__main__':
                 if value > winning_score:
                     winning_score = value
             print(f'Answer 1 is {winning_score}.')
+
+            # For answer 2.
+            scores = run_game(int(line_split[0]), int(line_split[6]) * 100)
+            winning_score = 0
+            for _, value in scores.items():
+                if value > winning_score:
+                    winning_score = value
+            print(f'Answer 2 is {winning_score}.')
