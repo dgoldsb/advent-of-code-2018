@@ -5,7 +5,13 @@ If they're dangerous, maybe you can minimize the danger by finding the coordinat
 
 Using only the Manhattan distance, determine the area around each coordinate by counting the number of integer X,Y locations that are closest to that coordinate (and aren't tied in distance to any other coordinate).
 
-What is the size of the largest area that isn't infinite?
+What is the size of the largest area that isn't infinite
+
+--- Part Two ---
+
+On the other hand, if the coordinates are safe, maybe the best you can do is try to find a region near as many coordinates as possible.
+
+What is the size of the region containing all locations which have a total distance to all given coordinates of less than 10000?
 """
 
 import numpy as np
