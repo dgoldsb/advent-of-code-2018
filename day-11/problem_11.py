@@ -67,8 +67,7 @@ After 20 generations, what is the sum of the numbers of all pots which contain a
 
 import re
 
-GENERATIONS = 20
-print_counter = 0
+GENERATIONS = 50000000000
 
 
 class Pot():
@@ -104,27 +103,31 @@ class Pot():
             self.value = '.'
 
 
-def print_pots(current_pot):
-    global print_counter
-
-    values = ['.'] * 4 * (GENERATIONS - print_counter)
-    while True:
-        values.append(current_pot.value)
-        if current_pot.right is None:
-            break
-        else:
-            current_pot = current_pot.right
-    print(f'{str(print_counter).zfill(3)}: ' + ''.join(values))
-    print_counter +=
-
-
 def prune_pots(first, last):
     while first.right.value == '.' and first.right.right == '.' and first.value == '.':
         first = first.right
         del first.left
         first.left = None
 
+    while first.right.value == '.' and first.right.right == '.' and first.value == '.':
+        first = first.right
+        del first.left
+        first.left = None
+
     return first, last
+
+
+def score(current_pot):
+    total = 0
+    while True:
+        if current_pot.value == '#':
+            total += current_pot.index
+
+        if current_pot.right is None:
+            break
+        else:
+            current_pot = current_pot.right
+    return total
 
 
 if __name__ == '__main__':
@@ -152,16 +155,11 @@ if __name__ == '__main__':
                 value = matches[1]
                 dictionary[key] = value
 
-    # Print the rules.
-    for key, value in dictionary.items():
-        key_str = ''.join(list(key))
-        print(f'{key_str} => {value}')
-
     # Do timesteps
-    print(' ' * 4 * GENERATIONS + '               1         2         3')
-    print(' ' * 4 * GENERATIONS + '     0         0         0         0')
-    print_pots(first_pot)
-    for _ in range(GENERATIONS):
+    total = 0
+    last_df = 0
+    stability = 0
+    for index in range(GENERATIONS):
         # Create two pots to the right.
         for _ in range(2):
             last_pot.right = Pot(last_pot.index + 1, '.')
@@ -191,17 +189,20 @@ if __name__ == '__main__':
         # Print the state.
         first_pot = first_pot.left.left
         last_pot = last_pot.right.right
-        print_pots(first_pot)
+        first_pot, last_pot = prune_pots(first_pot, last_pot)
 
-    current_pot = first_pot
-    total = 0
-    while True:
-        if current_pot.value == '#':
-            total += current_pot.index
+        new_total = score(first_pot)
+        df = new_total - total
+        total = new_total
 
-        if current_pot.right is None:
-            break
+        if df == last_df:
+            stability += 1
         else:
-            current_pot = current_pot.right
+            last_df = df
 
-    print(f'Answer 1 is {total}.')
+        if stability == 10:
+            print(index)
+            total += (GENERATIONS - index - 1) * df
+            break
+
+    print(f'Answer is {total}.')
