@@ -25,6 +25,16 @@ Each time a cart has the option to turn (by arriving at any intersection), it tu
 Carts all move at the same speed; they take turns moving a single step at a time. They do this based on their current location: carts on the top row move first (acting from left to right), then carts on the second row move (again from left to right), then carts on the third row, and so on. Once each cart has moved one step, the process repeats; each of these loops is called a tick.
 
 After following their respective paths for a while, the carts eventually crash. To help prevent crashes, you'd like to know the location of the first crash. Locations are given in X,Y coordinates, where the furthest left column is X=0 and the furthest top row is Y=0.
+
+--- Part Two ---
+
+There isn't much you can do to prevent crashes in this ridiculous system. However, by predicting the crashes, the Elves know where to be in advance and instantly remove the two crashing carts the moment any crash occurs.
+
+They can proceed like this for a while, but eventually, they're going to run out of carts. It could be useful to figure out where the last cart that hasn't crashed will end up.
+
+After four very expensive crashes, a tick ends with only one cart remaining; its final location is 6,4.
+
+What is the location of the last cart at the end of the first tick where it is the only cart left?
 """
 
 import sys
@@ -88,6 +98,13 @@ class Cart:
         self.dir_to_vel()
 
 
+def find_cart(grid):
+    for x, line in enumerate(grid):
+        for y, cell in enumerate(line):
+            if isinstance(cell[1], Cart):
+                print(f'Answer 2 is {y},{x}.')
+
+
 if __name__ == '__main__':
     # Read input.
     grid = []
@@ -108,8 +125,9 @@ if __name__ == '__main__':
 
     # Do ticks.
     iter = 0
-    while True:
-        print(f'tick {iter}')
+    cont = True
+    while cont:
+        print(f'Tick {iter}.')
         iter += 1
         moves = []
 
@@ -131,10 +149,63 @@ if __name__ == '__main__':
 
                     if isinstance(grid[new_x][new_y][1], Cart):
                         print(f'Answer 1 is {new_y},{new_x}.')
-                        sys.exit(0)
+                        cont = False
                     else:
-                        print([x, y])
-                        print([new_x, new_y])
+                        grid[new_x][new_y][1] = cell[1]
+                        cell[1] = None
+                        already_moved.append((new_x, new_y))
+
+    # Reset and now with collisions.
+    grid = []
+    with open('input', 'r') as file:
+        for line in file.readlines():
+            # We create a double layer, one for carts, one for tracks.
+            grid.append([[x, None] for x in list(line)])
+
+    # Move carts to the right layer.
+    cart_count = 0
+    for row in grid:
+        for cell in row:
+            if cell[0] in DIRS:
+                cell[1] = Cart(cell[0])
+                cart_count += 1
+                if cell[0] in ['<', '>']:
+                    cell[0] = '-'
+                else:
+                    cell[0] = '|'
+
+    # Do ticks.
+    iter = 0
+    cont = True
+    while cont:
+        iter += 1
+        moves = []
+
+        already_moved = []
+
+        for x, row in enumerate(grid):
+            for y, cell in enumerate(row):
+                if (x, y) in already_moved:
+                    pass
+                elif isinstance(cell[1], Cart):
+                    if cell[0] == '+':
+                        cell[1].turn()
+                    elif cell[0] in ['/', '\\']:
+                        cell[1].bend(cell[0])
+
+                    new_coords = cell[1].step([x, y])
+                    new_x = new_coords[0]
+                    new_y = new_coords[1]
+
+                    if isinstance(grid[new_x][new_y][1], Cart):
+                        cell[1] = None
+                        grid[new_x][new_y][1] = None
+                        cart_count -= 2
+                        print(f'BOOM, {cart_count} left.')
+                        if cart_count < 2:
+                            find_cart(grid)
+                            cont = False
+                    else:
                         grid[new_x][new_y][1] = cell[1]
                         cell[1] = None
                         already_moved.append((new_x, new_y))
