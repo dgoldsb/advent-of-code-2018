@@ -152,10 +152,121 @@ import re
 
 import numpy as np
 
+MIN_X = None
+GRID = np.ndarray(shape=(0,0))
+SPRING = [500, 0]
+HIT_BOTTOM = 0
+
+
+class Drop:
+    def __init__(self, location=SPRING):
+        self.x = location[0]
+        self.y = location[1]
+
+    def can_fall(self):
+        return GRID[self.x][self.y + 1] in [0, 2]
+
+    def can_spread(self):
+        return (GRID[self.x - 1][self.y] in [0, 2]) or (GRID[self.x + 1][self.y] in [0, 2])
+
+    def fall(self):
+        global HIT_BOTTOM
+
+        while True:
+            if self.y + 1 == len(GRID[0]):
+                # A small safeguard.
+                HIT_BOTTOM += 1
+                print(f'DRIP {HIT_BOTTOM}.')
+                if HIT_BOTTOM == 10000:
+                    print_grid()
+                    import sys
+                    sys.exit(1)
+
+                # Return that this hit the end
+                return True
+            elif not self.can_fall():
+                break
+            else:
+                self.y += 1
+                GRID[self.x][self.y] = 2
+
+        self.spread()
+
+    def spread(self):
+        children = 0
+
+        # Spread right.
+        start_x = self.x
+        start_y = self.y
+        while True:
+            if self.can_fall():
+                new_drop = Drop([self.x, self.y])
+                new_drop.fall()
+                children += 1
+                break
+            elif GRID[self.x + 1][self.y] == -1:
+                break
+            else:
+                self.x += 1
+                GRID[self.x][self.y] = 2
+
+        # Spread left.
+        self.x = start_x
+        self.y = start_y
+        while True:
+            if self.can_fall():
+                new_drop = Drop([self.x, self.y])
+                new_drop.fall()
+                children += 1
+                break
+            elif GRID[self.x - 1][self.y] == -1:
+                break
+            else:
+                self.x -= 1
+                GRID[self.x][self.y] = 2
+
+        # If no children, spread still.
+        if children == 0:
+            self.still()
+
+    def still(self):
+        GRID[self.x][self.y] = 3
+
+        while True:
+            if GRID[self.x + 1][self.y] == -1:
+                break
+            else:
+                self.x += 1
+                GRID[self.x][self.y] = 3
+
+        while True:
+            if GRID[self.x - 1][self.y] == -1:
+                break
+            else:
+                self.x -= 1
+                GRID[self.x][self.y] = 3
+
+
+def print_grid():
+    def map_to_char(a):
+        if a == 1:
+            return '+'
+        elif a == -1:
+            return '#'
+        elif a == 0:
+            return '.'
+        elif a == 2:
+            return '|'
+        elif a == 3:
+            return '~'
+
+    for grid_line in list(np.transpose(GRID)[:200]):
+        print(''.join([map_to_char(a) for a in grid_line[MIN_X:]]))
+
 
 if __name__ == '__main__':
     tiles = []
-    with open('example', 'r') as file:
+    with open('input', 'r') as file:
         for line in file:
             match = re.match('([xy])=([0-9]+), ([xy])=([0-9]+)..([0-9]+)', line)
             if match:
@@ -167,24 +278,30 @@ if __name__ == '__main__':
                         tiles.append((x, int(match.group(2))))
 
     # Create the grid.
+    MIN_X = min([c[0] for c in tiles]) - 2
     maxx = max([c[0] for c in tiles]) + 2
     maxy = max([c[1] for c in tiles]) + 1
-    grid = np.ndarray(shape=(maxx, maxy))
+    GRID = np.ndarray(shape=(maxx, maxy))
     for c in tiles:  # 1 is well, 2 is flowing, 3 is still, -1 is clay
-        grid[c[0], c[1]] = -1
-    grid[500, 0] = 1  # place the well
+        GRID[c[0], c[1]] = -1
+    GRID[SPRING[0], SPRING[1]] = 1  # place the well
 
+    # Loop until the drop and its children are dead.
+    i = 0
     while True:
-        copy = np.copy(grid)
+        grid_copy = np.copy(GRID)
+        drop = Drop()
 
-        # Enter a water drop.
-        # SPLIT STREAMS
-        d = [500, 0]
-        while True:
-            if grid[d[0]][d[1] + 1]:
+        # Evaluate the drop.
+        if drop.can_fall():
+            drop.fall()
+        elif drop.can_spread():
+            drop.spread()
 
-
-
-
-        if np.array_equal(grid, copy):
+        print(f'Doing drop from well #{i}.')
+        i += 1
+        if np.array_equal(GRID, grid_copy):
             break
+
+    # Print the endgame grid.
+    print_grid()
