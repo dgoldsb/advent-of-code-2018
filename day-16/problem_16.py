@@ -146,6 +146,14 @@ How many tiles can be reached by the water? To prevent counting forever, ignore 
 So, in the example above, counting both water at rest (~) and other sand tiles the water can hypothetically reach (|), the total number of tiles the water can reach is 57.
 
 How many tiles can the water reach within the range of y values in your scan?
+
+--- Part Two ---
+
+After a very long time, the water spring will run dry. How much water will be retained?
+
+In the example above, water that won't eventually drain out is shown as ~, a total of 29 tiles.
+
+How many water tiles are left after the water spring stops producing water and all remaining water not at rest has drained?
 """
 
 import re
@@ -155,13 +163,14 @@ import numpy as np
 MIN_X = None
 GRID = np.ndarray(shape=(0,0))
 SPRING = [500, 0]
-HIT_BOTTOM = 0
-
+DEBUG = False
 
 class Drop:
     def __init__(self, location=SPRING):
         self.x = location[0]
         self.y = location[1]
+        if DEBUG:
+            print(f'Spawn at {self.x},{self.y}.')
 
     def can_fall(self):
         return GRID[self.x][self.y + 1] in [0, 2]
@@ -170,19 +179,11 @@ class Drop:
         return (GRID[self.x - 1][self.y] in [0, 2]) or (GRID[self.x + 1][self.y] in [0, 2])
 
     def fall(self):
-        global HIT_BOTTOM
-
         while True:
-            if self.y + 1 == len(GRID[0]):
-                # A small safeguard.
-                HIT_BOTTOM += 1
-                print(f'DRIP {HIT_BOTTOM}.')
-                if HIT_BOTTOM == 10000:
-                    print_grid()
-                    import sys
-                    sys.exit(1)
-
+            if self.y + 1 == len(GRID[x]):
                 # Return that this hit the end
+                return True
+            elif GRID[x][self.y + 1] == 100:
                 return True
             elif not self.can_fall():
                 break
@@ -190,19 +191,28 @@ class Drop:
                 self.y += 1
                 GRID[self.x][self.y] = 2
 
-        self.spread()
+        return self.spread()
 
     def spread(self):
-        children = 0
+        children = []
 
         # Spread right.
+        right_ended = False
         start_x = self.x
         start_y = self.y
         while True:
             if self.can_fall():
                 new_drop = Drop([self.x, self.y])
-                new_drop.fall()
-                children += 1
+                reached_end = new_drop.fall()
+                if reached_end:
+                    GRID[self.x][self.y] = 100  # create a sink
+                    children.append(0)
+                else:
+                    children.append(1)
+                break
+            elif GRID[self.x + 1][self.y] == 100:
+                children.append(0)
+                right_ended = True
                 break
             elif GRID[self.x + 1][self.y] == -1:
                 break
@@ -211,13 +221,22 @@ class Drop:
                 GRID[self.x][self.y] = 2
 
         # Spread left.
+        left_ended = False
         self.x = start_x
         self.y = start_y
         while True:
             if self.can_fall():
                 new_drop = Drop([self.x, self.y])
-                new_drop.fall()
-                children += 1
+                reached_end = new_drop.fall()
+                if reached_end:
+                    GRID[self.x][self.y] = 100  # create a sink
+                    children.append(0)
+                else:
+                    children.append(1)
+                break
+            elif GRID[self.x - 1][self.y] == 100:
+                children.append(0)
+                left_ended = True
                 break
             elif GRID[self.x - 1][self.y] == -1:
                 break
@@ -225,9 +244,17 @@ class Drop:
                 self.x -= 1
                 GRID[self.x][self.y] = 2
 
+        if right_ended and left_ended:
+            return True
+
         # If no children, spread still.
-        if children == 0:
-            self.still()
+        if len(children) == 0:
+            return self.still()
+        else:
+            if sum(children) > 0:
+                return False
+            else:
+                return True
 
     def still(self):
         GRID[self.x][self.y] = 3
@@ -246,6 +273,9 @@ class Drop:
                 self.x -= 1
                 GRID[self.x][self.y] = 3
 
+        # Return that this did not reach a sink.
+        return False
+
 
 def print_grid():
     def map_to_char(a):
@@ -255,13 +285,23 @@ def print_grid():
             return '#'
         elif a == 0:
             return '.'
+        elif a == 100:
+            return 's'
         elif a == 2:
             return '|'
         elif a == 3:
             return '~'
 
-    for grid_line in list(np.transpose(GRID)[:200]):
+    for grid_line in list(np.transpose(GRID)):
         print(''.join([map_to_char(a) for a in grid_line[MIN_X:]]))
+
+
+def answer():
+    unique, counts = np.unique(GRID, return_counts=True)
+    dict_counts = dict(zip(unique, counts))
+    total = dict_counts[2] + dict_counts[3] + dict_counts[100]
+    print(f'Answer 1 is {total}.')
+    print(f'Answer 1 is {dict_counts[3]}.')
 
 
 if __name__ == '__main__':
@@ -279,9 +319,10 @@ if __name__ == '__main__':
 
     # Create the grid.
     MIN_X = min([c[0] for c in tiles]) - 2
-    maxx = max([c[0] for c in tiles]) + 2
-    maxy = max([c[1] for c in tiles]) + 1
-    GRID = np.ndarray(shape=(maxx, maxy))
+    min_y = min([c[1] for c in tiles])
+    max_x = max([c[0] for c in tiles]) + 2
+    max_y = max([c[1] for c in tiles]) + 1
+    GRID = np.ndarray(shape=(max_x, max_y))
     for c in tiles:  # 1 is well, 2 is flowing, 3 is still, -1 is clay
         GRID[c[0], c[1]] = -1
     GRID[SPRING[0], SPRING[1]] = 1  # place the well
@@ -298,10 +339,15 @@ if __name__ == '__main__':
         elif drop.can_spread():
             drop.spread()
 
-        print(f'Doing drop from well #{i}.')
+        if DEBUG:
+            print(f'Doing drop from well #{i}.')
         i += 1
         if np.array_equal(GRID, grid_copy):
             break
 
+
     # Print the endgame grid.
+    smaller = [line[min_y:] for line in list(GRID)]
+    GRID = np.array(smaller)
     print_grid()
+    answer()
