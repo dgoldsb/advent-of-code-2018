@@ -147,12 +147,12 @@ def a_star_search(graph, start, goal):
     return came_from, cost_so_far
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Read input.
-    with open('example', 'r') as file:
+    with open("example", "r") as file:
         body = file.read()
-        depth = int(re.search('depth: ([0-9]+)', body).group(1))
-        match = re.search('target: ([0-9]+),([0-9]+)', body)
+        depth = int(re.search("depth: ([0-9]+)", body).group(1))
+        match = re.search("target: ([0-9]+),([0-9]+)", body)
         xt = int(match.group(1))
         yt = int(match.group(2))
 
@@ -160,29 +160,30 @@ if __name__ == '__main__':
         return (a + depth) % 20183
 
     # Create the grid.
-    geo_index = np.empty(shape=(xt+1, yt+1))
+    geo_index = np.empty(shape=(xt + 1, yt + 1))
     total_risk_level = 0
 
-    for x in range(xt+1):
-        for y in range(yt+1):
-            if (x == 0 and y == 0) or(x == xt and y == yt):
+    for x in range(xt + 1):
+        for y in range(yt + 1):
+            if (x == 0 and y == 0) or (x == xt and y == yt):
                 geo_index[x][y] = 0
             elif y == 0:
                 geo_index[x][y] = x * 16807
             elif x == 0:
                 geo_index[x][y] = y * 48271
             else:
-                geo_index[x][y] = geo_to_ero(geo_index[x-1][y]) * \
-                                  geo_to_ero(geo_index[x][y-1])
+                geo_index[x][y] = geo_to_ero(geo_index[x - 1][y]) * geo_to_ero(
+                    geo_index[x][y - 1]
+                )
 
             total_risk_level += int(geo_to_ero(geo_index[x][y]) % 3)
 
-    print(f'Answer 1 is {total_risk_level}')
+    print(f"Answer 1 is {total_risk_level}")
 
     # We need a bigger grid, let's make a safety margin.
-    big_grid = np.empty(shape=(xt+50, yt+50))
-    for x in range(xt+50):
-        for y in range(yt+50):
+    big_grid = np.empty(shape=(xt + 50, yt + 50))
+    for x in range(xt + 50):
+        for y in range(yt + 50):
             if (x == 0 and y == 0) or (x == xt and y == yt):
                 big_grid[x][y] = 0
             elif y == 0:
@@ -190,15 +191,17 @@ if __name__ == '__main__':
             elif x == 0:
                 big_grid[x][y] = y * 48271
             else:
-                big_grid[x][y] = geo_to_ero(big_grid[x-1][y]) * geo_to_ero(big_grid[x][y-1])
+                big_grid[x][y] = geo_to_ero(big_grid[x - 1][y]) * geo_to_ero(
+                    big_grid[x][y - 1]
+                )
 
     def geo_to_type(a):
         return geo_to_ero(a) % 3
 
     # Construct the graph.
     graph = Graph()
-    for x in range(xt+50):
-        for y in range(yt+50):
+    for x in range(xt + 50):
+        for y in range(yt + 50):
             terrain = geo_to_type(big_grid[x][y])
 
             for state in [0, 1, 2]:  # 0 none, 1 climbing gear, 2 flashlight
@@ -223,9 +226,11 @@ if __name__ == '__main__':
 
                     # Also we can switch our fucking gear.
                     for state_next in [0, 1, 2]:
-                        if ((terrain != state_next) or terrain == 0) and state != state_next:
+                        if (
+                            (terrain != state_next) or terrain == 0
+                        ) and state != state_next:
                             node_next = (x, y, state_next)
                             graph.add_edge(node, node_next, 7)
 
     start, cost_so_far = a_star_search(graph, (0, 0, 1), (xt, yt, 1))
-    print(f'Answer 2 is {cost_so_far[(xt, yt, 1)]}.')
+    print(f"Answer 2 is {cost_so_far[(xt, yt, 1)]}.")

@@ -24,13 +24,13 @@ You notice that the device repeats the same frequency change list over and over.
 What is the first frequency your device reaches twice?
 """
 
-if __name__=='__main__':
+if __name__ == "__main__":
     # Part 1.
     values = []
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for row in file:
             values.append(int(row))
-    print('Answer 1 is {}'.format(sum(values)))
+    print("Answer 1 is {}".format(sum(values)))
 
     iterations = 0
     total = 0
@@ -41,9 +41,9 @@ if __name__=='__main__':
         for value in values:
             total += value
             if total in visited_values:
-                print('Answer 2 is {}'.format(total))
+                print("Answer 2 is {}".format(total))
                 found = True
                 break
             visited_values.add(total)
         iterations += 1
-        print('{} iterations done'.format(iterations))
+        print("{} iterations done".format(iterations))

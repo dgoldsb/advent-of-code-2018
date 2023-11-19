@@ -161,22 +161,25 @@ import re
 import numpy as np
 
 MIN_X = None
-GRID = np.ndarray(shape=(0,0))
+GRID = np.ndarray(shape=(0, 0))
 SPRING = [500, 0]
 DEBUG = False
+
 
 class Drop:
     def __init__(self, location=SPRING):
         self.x = location[0]
         self.y = location[1]
         if DEBUG:
-            print(f'Spawn at {self.x},{self.y}.')
+            print(f"Spawn at {self.x},{self.y}.")
 
     def can_fall(self):
         return GRID[self.x][self.y + 1] in [0, 2]
 
     def can_spread(self):
-        return (GRID[self.x - 1][self.y] in [0, 2]) or (GRID[self.x + 1][self.y] in [0, 2])
+        return (GRID[self.x - 1][self.y] in [0, 2]) or (
+            GRID[self.x + 1][self.y] in [0, 2]
+        )
 
     def fall(self):
         while True:
@@ -280,40 +283,40 @@ class Drop:
 def print_grid():
     def map_to_char(a):
         if a == 1:
-            return '+'
+            return "+"
         elif a == -1:
-            return '#'
+            return "#"
         elif a == 0:
-            return '.'
+            return "."
         elif a == 100:
-            return 's'
+            return "s"
         elif a == 2:
-            return '|'
+            return "|"
         elif a == 3:
-            return '~'
+            return "~"
 
     for grid_line in list(np.transpose(GRID)):
-        print(''.join([map_to_char(a) for a in grid_line[MIN_X:]]))
+        print("".join([map_to_char(a) for a in grid_line[MIN_X:]]))
 
 
 def answer():
     unique, counts = np.unique(GRID, return_counts=True)
     dict_counts = dict(zip(unique, counts))
     total = dict_counts[2] + dict_counts[3] + dict_counts[100]
-    print(f'Answer 1 is {total}.')
-    print(f'Answer 1 is {dict_counts[3]}.')
+    print(f"Answer 1 is {total}.")
+    print(f"Answer 1 is {dict_counts[3]}.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     tiles = []
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for line in file:
-            match = re.match('([xy])=([0-9]+), ([xy])=([0-9]+)..([0-9]+)', line)
+            match = re.match("([xy])=([0-9]+), ([xy])=([0-9]+)..([0-9]+)", line)
             if match:
-                if match.group(1) == 'x':
+                if match.group(1) == "x":
                     for y in range(int(match.group(4)), int(match.group(5)) + 1):
                         tiles.append((int(match.group(2)), y))
-                elif match.group(1) == 'y':
+                elif match.group(1) == "y":
                     for x in range(int(match.group(4)), int(match.group(5)) + 1):
                         tiles.append((x, int(match.group(2))))
 
@@ -340,11 +343,10 @@ if __name__ == '__main__':
             drop.spread()
 
         if DEBUG:
-            print(f'Doing drop from well #{i}.')
+            print(f"Doing drop from well #{i}.")
         i += 1
         if np.array_equal(GRID, grid_copy):
             break
-
 
     # Print the endgame grid.
     smaller = [line[min_y:] for line in list(GRID)]

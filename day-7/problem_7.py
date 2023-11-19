@@ -49,6 +49,7 @@ So, in this example, the value of the root node is 66.
 What is the value of the root node?
 """
 
+
 class Node:
     def __init__(self, a, b):
         self._child_count = a
@@ -71,8 +72,8 @@ def recursive_decompose(sequence):
             sequence = remainder
 
     if nodes[0]._meta_count > 0:
-        nodes[0].metadata = sequence[0:nodes[0]._meta_count]
-        sequence = sequence[nodes[0]._meta_count:]
+        nodes[0].metadata = sequence[0 : nodes[0]._meta_count]
+        sequence = sequence[nodes[0]._meta_count :]
 
     return nodes, sequence
 
@@ -88,10 +89,10 @@ def recursive_value(node):
     return total
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Read input.
-    with open('input', 'r') as file:
-        sequence = [int(x) for x in file.read().split(' ')]
+    with open("input", "r") as file:
+        sequence = [int(x) for x in file.read().split(" ")]
 
     # Process to data structure.
     nodes, _ = recursive_decompose(sequence)
@@ -101,7 +102,7 @@ if __name__ == '__main__':
     for node in nodes:
         for meta in node.metadata:
             total += meta
-    print(f'Answer 1 is {total}.')
+    print(f"Answer 1 is {total}.")
 
     # Answer 2.
-    print(f'Answer 2 is {recursive_value(nodes[0])}.')
+    print(f"Answer 2 is {recursive_value(nodes[0])}.")

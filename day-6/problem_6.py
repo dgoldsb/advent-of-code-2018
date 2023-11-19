@@ -54,33 +54,34 @@ import re
 JOB_CONSTANT_TIME = 60
 WORKER_COUNT = 5
 
+
 def job_time(name):
-    return ord(name) - ord('A') + 1 + JOB_CONSTANT_TIME
+    return ord(name) - ord("A") + 1 + JOB_CONSTANT_TIME
 
 
 class Worker:
     def __init__(self):
         self.busy = False
-        self.working_on = ''
+        self.working_on = ""
         self.seconds_remaining = None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Read input.
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         dependencies = []
         for line in file:
             dependency = []
 
             # Find first.
-            match = re.search('Step [A-Z]', line)
+            match = re.search("Step [A-Z]", line)
             if match:
-                dependency.append(match.group(0).replace('Step ', ''))
+                dependency.append(match.group(0).replace("Step ", ""))
 
             # Find second.
-            match = re.search('step [A-Z]', line)
+            match = re.search("step [A-Z]", line)
             if match:
-                dependency.append(match.group(0).replace('step ', ''))
+                dependency.append(match.group(0).replace("step ", ""))
 
             # Add.
             dependencies.append(dependency)
@@ -116,8 +117,8 @@ if __name__ == '__main__':
 
         order.append(ready[0])
 
-    answer_1 = ''.join(order)
-    print(f'Answer 1 is {answer_1}.')
+    answer_1 = "".join(order)
+    print(f"Answer 1 is {answer_1}.")
 
     # Now for the tricky part, we need a worker class.
     workers = []
@@ -138,7 +139,7 @@ if __name__ == '__main__':
                         tracker[key] = value - set([worker.working_on])
                     done.append(worker.working_on)
                     worker.busy = False
-                    worker.working_one = ''
+                    worker.working_one = ""
 
         # In progress.
         in_progress = [worker.working_on for worker in workers]
@@ -162,9 +163,11 @@ if __name__ == '__main__':
 
         # Report status.
         done.sort()
-        status = [str(seconds)] + [worker.working_on for worker in workers] + [''.join(done)]
-        print(' '.join(status))
+        status = (
+            [str(seconds)] + [worker.working_on for worker in workers] + ["".join(done)]
+        )
+        print(" ".join(status))
 
         seconds += 1
 
-    print(f'Answer 2 is {seconds-1}.')
+    print(f"Answer 2 is {seconds-1}.")

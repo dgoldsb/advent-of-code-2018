@@ -77,7 +77,7 @@ import re
 GENERATIONS = 50000000000
 
 
-class Pot():
+class Pot:
     def __init__(self, index, value):
         self.index = index
         self.value = value
@@ -88,35 +88,40 @@ class Pot():
     def timestep(self, dictionary):
         # Create pots if required.
         if self.left is None:
-            self.left = Pot(self.index - 1, '.')
+            self.left = Pot(self.index - 1, ".")
             self.left.right = self
         if self.left.left is None:
-            self.left.left = Pot(self.index - 2, '.')
+            self.left.left = Pot(self.index - 2, ".")
             self.left.left.right = self.left
         if self.right is None:
-            self.right = Pot(self.index + 1, '.')
+            self.right = Pot(self.index + 1, ".")
             self.right.left = self
         if self.right.right is None:
-            self.right.right = Pot(self.index + 2, '.')
+            self.right.right = Pot(self.index + 2, ".")
             self.right.right.left = self.right
 
         # Find and set the next value.
-        key = (self.left.left.previous_value, self.left.previous_value,
-               self.value, self.right.value, self.right.right.value)
+        key = (
+            self.left.left.previous_value,
+            self.left.previous_value,
+            self.value,
+            self.right.value,
+            self.right.right.value,
+        )
         self.previous_value = self.value
         try:
             self.value = dictionary[key]
         except:
-            self.value = '.'
+            self.value = "."
 
 
 def prune_pots(first, last):
-    while first.right.value == '.' and first.right.right == '.' and first.value == '.':
+    while first.right.value == "." and first.right.right == "." and first.value == ".":
         first = first.right
         del first.left
         first.left = None
 
-    while first.right.value == '.' and first.right.right == '.' and first.value == '.':
+    while first.right.value == "." and first.right.right == "." and first.value == ".":
         first = first.right
         del first.left
         first.left = None
@@ -127,7 +132,7 @@ def prune_pots(first, last):
 def score(current_pot):
     total = 0
     while True:
-        if current_pot.value == '#':
+        if current_pot.value == "#":
             total += current_pot.index
 
         if current_pot.right is None:
@@ -137,18 +142,18 @@ def score(current_pot):
     return total
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     first_pot = None
     last_pot = None
     pots = []
     dictionary = dict()
 
     # Read input.
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for line in file.readlines():
-            matches = re.findall('[\.#]+', line)
+            matches = re.findall("[\.#]+", line)
 
-            if matches and line[0] == 'i':
+            if matches and line[0] == "i":
                 initial_state = list(matches[0])
                 for index, value in enumerate(initial_state):
                     pots.append(Pot(index, value))
@@ -169,13 +174,13 @@ if __name__ == '__main__':
     for index in range(GENERATIONS):
         # Create two pots to the right.
         for _ in range(2):
-            last_pot.right = Pot(last_pot.index + 1, '.')
+            last_pot.right = Pot(last_pot.index + 1, ".")
             last_pot.right.left = last_pot
             last_pot = last_pot.right
 
         # Create two pots to the left.
         for _ in range(2):
-            first_pot.left = Pot(first_pot.index - 1, '.')
+            first_pot.left = Pot(first_pot.index - 1, ".")
             first_pot.left.right = first_pot
             first_pot = first_pot.left
 
@@ -188,7 +193,6 @@ if __name__ == '__main__':
                 break
             else:
                 current_pot = current_pot.right
-
 
         for pot in pots_to_update:
             pot.timestep(dictionary)
@@ -212,4 +216,4 @@ if __name__ == '__main__':
             total += (GENERATIONS - index - 1) * df
             break
 
-    print(f'Answer is {total}.')
+    print(f"Answer is {total}.")

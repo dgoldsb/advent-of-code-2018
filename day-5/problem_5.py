@@ -16,8 +16,10 @@ What is the size of the region containing all locations which have a total dista
 
 import numpy as np
 
+
 def manhattan_distance(x, y):
     return abs(x[0] - y[0]) + abs(x[1] - y[1])
+
 
 def closest_index(x, points):
     closest_distance = 10**12
@@ -31,18 +33,20 @@ def closest_index(x, points):
             closest_point = [-1, -1, -1]
     return closest_point[2]
 
+
 def total_distance(x, points):
     total = 0
     for point in points:
         total += manhattan_distance(point, x)
     return total
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Read input.
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         points = []
         for line in file:
-            points.append([int(x) for x in line.replace('\n', '').split(',')])
+            points.append([int(x) for x in line.replace("\n", "").split(",")])
 
     # Add a point ID to deal with identical points later on.
     for index, _ in enumerate(points):
@@ -75,7 +79,7 @@ if __name__ == '__main__':
     for value, count in zip(unique, counts):
         if count > largest_area and value not in ignore:
             largest_area = count
-    print(f'Answer 1 is {largest_area} squares.')
+    print(f"Answer 1 is {largest_area} squares.")
 
     # We iterate again over the box with the new condition.
     for x in range(max_index):
@@ -90,4 +94,4 @@ if __name__ == '__main__':
     unique, counts = np.unique(box, return_counts=True)
     dict_version = dict(zip(unique, counts))
     safe_area = dict_version[1]
-    print(f'Answer 2 is {safe_area} squares.')
+    print(f"Answer 2 is {safe_area} squares.")

@@ -66,9 +66,9 @@ What is the X,Y,size identifier of the square with the largest total power?
 import numpy as np
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Read input.
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         grid_serial = int(file.read())
 
     # Create the grid.
@@ -100,7 +100,7 @@ if __name__ == '__main__':
                 index = (x, y)
 
     # Answer!
-    print(f'Answer 1 is {index[0]},{index[1]} with {max_sum}')
+    print(f"Answer 1 is {index[0]},{index[1]} with {max_sum}")
 
     # Damn, I knew this would not be as easy.
     # Could be faster if I program this smarter.
@@ -111,11 +111,13 @@ if __name__ == '__main__':
             for y in range(0, 301 - size):
                 sum = 0
                 for a in range(x, x + size):
-                    sum += np.sum(grid[a][y:y + size])
+                    sum += np.sum(grid[a][y : y + size])
                 if sum > max_sum:
                     max_sum = sum
                     index = (x + 1, y + 1, size)
-        print(f'Current best {index[0]},{index[1]},{index[2]} for size {size} with {max_sum}')
+        print(
+            f"Current best {index[0]},{index[1]},{index[2]} for size {size} with {max_sum}"
+        )
 
     # Answer 2!
-    print(f'Answer 2 is {index[0]},{index[1]},{index[2]}')
+    print(f"Answer 2 is {index[0]},{index[1]},{index[2]}")

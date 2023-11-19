@@ -25,12 +25,14 @@ class Constellation:
         self.points = self.points.union(constellation.points)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     points = []
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for line in file:
             if len(line) > 0:
-                points.append(tuple([int(x) for x in line.replace('\n', '').split(',')]))
+                points.append(
+                    tuple([int(x) for x in line.replace("\n", "").split(",")])
+                )
 
     constellations = list()
     for point in points:
@@ -48,8 +50,10 @@ if __name__ == '__main__':
             merge_into = indices[0]
             merge_from = indices[1:][::-1]
             while len(merge_from) != 0:
-                constellations[merge_into].merge_constellation(constellations[merge_from[0]])
+                constellations[merge_into].merge_constellation(
+                    constellations[merge_from[0]]
+                )
                 del constellations[merge_from[0]]
                 del merge_from[0]
 
-    print(f'Answer 1 is {len(constellations)}')
+    print(f"Answer 1 is {len(constellations)}")

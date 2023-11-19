@@ -47,6 +47,7 @@ Amused by the speed of your answer, the Elves are curious:
 What would the new winning Elf's score be if the number of the last marble were 100 times larger?
 """
 
+
 class Marble:
     def __init__(self, value):
         self.value = value
@@ -91,11 +92,11 @@ def run_game(players, marbles):
     return scores
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Read input.
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for line in file.readlines():
-            line_split = line.split(' ')
+            line_split = line.split(" ")
 
             # Find the largest score.
             scores = run_game(int(line_split[0]), int(line_split[6]))
@@ -103,7 +104,7 @@ if __name__ == '__main__':
             for _, value in scores.items():
                 if value > winning_score:
                     winning_score = value
-            print(f'Answer 1 is {winning_score}.')
+            print(f"Answer 1 is {winning_score}.")
 
             # For answer 2.
             scores = run_game(int(line_split[0]), int(line_split[6]) * 100)
@@ -111,4 +112,4 @@ if __name__ == '__main__':
             for _, value in scores.items():
                 if value > winning_score:
                     winning_score = value
-            print(f'Answer 2 is {winning_score}.')
+            print(f"Answer 2 is {winning_score}.")

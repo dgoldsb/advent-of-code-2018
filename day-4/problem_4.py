@@ -78,25 +78,27 @@ def substitute_pair(polymer):
         return polymer
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Read the input string.
-    with open('input', 'r') as file:
-        input = list(file.read().replace('\n', ''))
+    with open("input", "r") as file:
+        input = list(file.read().replace("\n", ""))
     sys.setrecursionlimit(10000)
 
     # Get the result.
     result = substitute_pair(input)
-    print(f'Answer 1 is {len(result)}')
+    print(f"Answer 1 is {len(result)}")
 
     # Get the set of all elements.
     elements = set([x.lower() for x in input])
 
     shortest = len(input)
     for element in list(elements):
-        print(f'Testing element {element}')
+        print(f"Testing element {element}")
         edited_input = copy(input)
-        edited_input = [x for x in edited_input if x not in [element.lower(), element.upper()]]
+        edited_input = [
+            x for x in edited_input if x not in [element.lower(), element.upper()]
+        ]
         length_polymer = len(substitute_pair(edited_input))
         if length_polymer < shortest:
             shortest = length_polymer
-    print(f'Answer 2 is {shortest}.')
+    print(f"Answer 2 is {shortest}.")

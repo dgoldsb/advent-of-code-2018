@@ -39,60 +39,60 @@ What is the location of the last cart at the end of the first tick where it is t
 
 import sys
 
-DIRS = ['^', '>', 'v', '<']
+DIRS = ["^", ">", "v", "<"]
 
 
 class Cart:
     def __init__(self, dir):
         self.dir = dir
         self.dir_to_vel()
-        self.next_turn = 'left'
+        self.next_turn = "left"
 
     def bend(self, c):
-        if c == '\\' and self.dir == '^':
-            self.dir = '<'
-        elif c == '\\' and self.dir == '>':
-            self.dir = 'v'
-        elif c == '\\' and self.dir == '<':
-            self.dir = '^'
-        elif c == '\\' and self.dir == 'v':
-            self.dir = '>'
-        elif c == '/' and self.dir == '^':
-            self.dir = '>'
-        elif c == '/' and self.dir == '>':
-            self.dir = '^'
-        elif c == '/' and self.dir == '<':
-            self.dir = 'v'
-        elif c == '/' and self.dir == 'v':
-            self.dir = '<'
+        if c == "\\" and self.dir == "^":
+            self.dir = "<"
+        elif c == "\\" and self.dir == ">":
+            self.dir = "v"
+        elif c == "\\" and self.dir == "<":
+            self.dir = "^"
+        elif c == "\\" and self.dir == "v":
+            self.dir = ">"
+        elif c == "/" and self.dir == "^":
+            self.dir = ">"
+        elif c == "/" and self.dir == ">":
+            self.dir = "^"
+        elif c == "/" and self.dir == "<":
+            self.dir = "v"
+        elif c == "/" and self.dir == "v":
+            self.dir = "<"
 
         self.dir_to_vel()
 
     def dir_to_vel(self):
-        if self.dir == '^':
+        if self.dir == "^":
             self.vel = [-1, 0]
-        elif self.dir == '>':
+        elif self.dir == ">":
             self.vel = [0, 1]
-        elif self.dir == 'v':
+        elif self.dir == "v":
             self.vel = [1, 0]
-        elif self.dir == '<':
+        elif self.dir == "<":
             self.vel = [0, -1]
         else:
-            raise ValueError('Unknown direction')
+            raise ValueError("Unknown direction")
 
     def step(self, coords):
         return [x + dx for x, dx in zip(coords, self.vel)]
 
     def turn(self):
         curr_index = DIRS.index(self.dir)
-        if self.next_turn == 'left':
+        if self.next_turn == "left":
             curr_index = ((curr_index - 1) + 4) % 4
-            self.next_turn = 'straight'
-        elif self.next_turn == 'right':
+            self.next_turn = "straight"
+        elif self.next_turn == "right":
             curr_index = (curr_index + 1) % 4
-            self.next_turn = 'left'
+            self.next_turn = "left"
         else:
-            self.next_turn = 'right'
+            self.next_turn = "right"
 
         self.dir = DIRS[curr_index]
         self.dir_to_vel()
@@ -102,13 +102,13 @@ def find_cart(grid):
     for x, line in enumerate(grid):
         for y, cell in enumerate(line):
             if isinstance(cell[1], Cart):
-                print(f'Answer 2 is {y},{x}.')
+                print(f"Answer 2 is {y},{x}.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Read input.
     grid = []
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for line in file.readlines():
             # We create a double layer, one for carts, one for tracks.
             grid.append([[x, None] for x in list(line)])
@@ -118,16 +118,16 @@ if __name__ == '__main__':
         for cell in row:
             if cell[0] in DIRS:
                 cell[1] = Cart(cell[0])
-                if cell[0] in ['<', '>']:
-                    cell[0] = '-'
+                if cell[0] in ["<", ">"]:
+                    cell[0] = "-"
                 else:
-                    cell[0] = '|'
+                    cell[0] = "|"
 
     # Do ticks.
     iter = 0
     cont = True
     while cont:
-        print(f'Tick {iter}.')
+        print(f"Tick {iter}.")
         iter += 1
         moves = []
 
@@ -138,9 +138,9 @@ if __name__ == '__main__':
                 if (x, y) in already_moved:
                     pass
                 elif isinstance(cell[1], Cart):
-                    if cell[0] == '+':
+                    if cell[0] == "+":
                         cell[1].turn()
-                    elif cell[0] in ['/', '\\']:
+                    elif cell[0] in ["/", "\\"]:
                         cell[1].bend(cell[0])
 
                     new_coords = cell[1].step([x, y])
@@ -148,7 +148,7 @@ if __name__ == '__main__':
                     new_y = new_coords[1]
 
                     if isinstance(grid[new_x][new_y][1], Cart):
-                        print(f'Answer 1 is {new_y},{new_x}.')
+                        print(f"Answer 1 is {new_y},{new_x}.")
                         cont = False
                     else:
                         grid[new_x][new_y][1] = cell[1]
@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
     # Reset and now with collisions.
     grid = []
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for line in file.readlines():
             # We create a double layer, one for carts, one for tracks.
             grid.append([[x, None] for x in list(line)])
@@ -169,10 +169,10 @@ if __name__ == '__main__':
             if cell[0] in DIRS:
                 cell[1] = Cart(cell[0])
                 cart_count += 1
-                if cell[0] in ['<', '>']:
-                    cell[0] = '-'
+                if cell[0] in ["<", ">"]:
+                    cell[0] = "-"
                 else:
-                    cell[0] = '|'
+                    cell[0] = "|"
 
     # Do ticks.
     iter = 0
@@ -188,9 +188,9 @@ if __name__ == '__main__':
                 if (x, y) in already_moved:
                     pass
                 elif isinstance(cell[1], Cart):
-                    if cell[0] == '+':
+                    if cell[0] == "+":
                         cell[1].turn()
-                    elif cell[0] in ['/', '\\']:
+                    elif cell[0] in ["/", "\\"]:
                         cell[1].bend(cell[0])
 
                     new_coords = cell[1].step([x, y])
@@ -201,7 +201,7 @@ if __name__ == '__main__':
                         cell[1] = None
                         grid[new_x][new_y][1] = None
                         cart_count -= 2
-                        print(f'BOOM, {cart_count} left.')
+                        print(f"BOOM, {cart_count} left.")
                         if cart_count < 2:
                             find_cart(grid)
                             cont = False

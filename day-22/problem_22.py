@@ -66,7 +66,9 @@ def z_manhattan1(a, b):
 
 
 def z_manhattan3(a, b):
-    return z_manhattan1(a[0], b[0]) + z_manhattan1(a[1], b[1]) + z_manhattan1(a[2], b[2])
+    return (
+        z_manhattan1(a[0], b[0]) + z_manhattan1(a[1], b[1]) + z_manhattan1(a[2], b[2])
+    )
 
 
 def in_range(a, b):
@@ -79,12 +81,12 @@ def in_range(a, b):
         return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Read input.
     bots = []
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for line in file:
-            match = re.match('pos=<([\-0-9]+),([\-0-9]+),([\-0-9]+)>, r=([0-9]+)', line)
+            match = re.match("pos=<([\-0-9]+),([\-0-9]+),([\-0-9]+)>, r=([0-9]+)", line)
             if match:
                 bot = [match.group(1), match.group(2), match.group(3), match.group(4)]
                 bot = tuple([int(x) for x in bot])
@@ -104,21 +106,25 @@ if __name__ == '__main__':
         if in_range(bots[biggest_i], bot):
             cnt += 1
 
-    print(f'Answer 1 is {cnt}.')
+    print(f"Answer 1 is {cnt}.")
 
     # Part 2 is tough, because the search space is real fucking sparse.
     # Binary search is tempting but not guaranteed to work the way I see others implement.
     solver = z3.Optimize()
 
-    x_ans = z3.Int('x_ans')
-    y_ans = z3.Int('y_ans')
-    z_ans = z3.Int('z_ans')
-    dist_ans = z3.Int('dist_ans')
+    x_ans = z3.Int("x_ans")
+    y_ans = z3.Int("y_ans")
+    z_ans = z3.Int("z_ans")
+    dist_ans = z3.Int("dist_ans")
 
     inside = []
     for i, bot in enumerate(bots):
-        bot_no = z3.Int('b{:4d}'.format(i))
-        ok = z3.If(z_manhattan3([x_ans, y_ans, z_ans], [bot[0], bot[1], bot[2]]) <= bot[3], 1, 0)
+        bot_no = z3.Int("b{:4d}".format(i))
+        ok = z3.If(
+            z_manhattan3([x_ans, y_ans, z_ans], [bot[0], bot[1], bot[2]]) <= bot[3],
+            1,
+            0,
+        )
         solver.add(bot_no == ok)
         inside.append(bot_no)
 
@@ -130,4 +136,4 @@ if __name__ == '__main__':
 
     m = solver.model()
     min_distance = m.eval(dist_ans)
-    print(f'Answer 2 is {min_distance}.')
+    print(f"Answer 2 is {min_distance}.")

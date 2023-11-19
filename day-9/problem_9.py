@@ -17,6 +17,7 @@ Impressed by your sub-hour communication capabilities, the Elves are curious: ex
 
 import re
 
+
 def print_lights(lights):
     min_x = min([light.x for light in lights])
     min_y = min([light.y for light in lights])
@@ -31,13 +32,13 @@ def print_lights(lights):
     for y in range(max_y + 1):
         line = []
         for x in range(max_x + 1):
-            line.append('.')
+            line.append(".")
         grid.append(line)
 
     for light in lights:
-        grid[light.y][light.x] = '#'
+        grid[light.y][light.x] = "#"
 
-    print('\n'.join([''.join(x) for x in grid]))
+    print("\n".join(["".join(x) for x in grid]))
 
 
 class Light:
@@ -52,16 +53,21 @@ class Light:
         self.y += self.yv
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Read input.
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         lights = []
         for line in file.readlines():
-            matches = re.findall('[0-9\-]+', line)
+            matches = re.findall("[0-9\-]+", line)
             if matches:
-                lights.append(Light(int(matches[0]), int(matches[1]),
-                                    int(matches[2]), int(matches[3])))
-
+                lights.append(
+                    Light(
+                        int(matches[0]),
+                        int(matches[1]),
+                        int(matches[2]),
+                        int(matches[3]),
+                    )
+                )
 
     counter = 0
     was_not_in_scope = True
@@ -71,9 +77,12 @@ if __name__ == '__main__':
             light.timestep()
         counter += 1
 
-        in_scope = abs(min([light.x for light in lights]) - max([light.x for light in lights])) < 100
+        in_scope = (
+            abs(min([light.x for light in lights]) - max([light.x for light in lights]))
+            < 100
+        )
 
         if in_scope:
             was_not_in_scope = False
-            print(f'You waited {counter} seconds...')
+            print(f"You waited {counter} seconds...")
             print_lights(lights)

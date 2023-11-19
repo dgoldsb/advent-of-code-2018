@@ -39,7 +39,7 @@ import sys
 
 def get_chardiff(v1, v2):
     diff = 0
-    common = ''
+    common = ""
     for counter, value in enumerate(v1):
         if value != v2[counter]:
             diff += 1
@@ -48,10 +48,10 @@ def get_chardiff(v1, v2):
     return diff, common
 
 
-if __name__=='__main__':
+if __name__ == "__main__":
     # Read input.
     values = []
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for row in file:
             values.append(row)
 
@@ -71,12 +71,12 @@ if __name__=='__main__':
             count_double += 1
         if triple_found:
             count_triple += 1
-    print('Answer 1 is {}'.format(count_double * count_triple))
+    print("Answer 1 is {}".format(count_double * count_triple))
 
     values.sort()
     for value_1 in values:
         for value_2 in values:
             diff, overlap = get_chardiff(value_1, value_2)
             if diff == 1:
-                print('Answer 2 is {}'.format(overlap))
+                print("Answer 2 is {}".format(overlap))
                 sys.exit(0)

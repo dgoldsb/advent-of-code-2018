@@ -73,100 +73,132 @@ What value is contained in register 0 after executing the test program?
 
 from copy import copy
 
+
 def addr(reg, a, b, c):
     reg[c] = reg[a] + reg[b]
     return reg
+
 
 def addi(reg, a, b, c):
     reg[c] = reg[a] + b
     return reg
 
+
 def mulr(reg, a, b, c):
     reg[c] = reg[a] * reg[b]
     return reg
+
 
 def muli(reg, a, b, c):
     reg[c] = reg[a] * b
     return reg
 
+
 def banr(reg, a, b, c):
     reg[c] = reg[a] & reg[b]
     return reg
+
 
 def bani(reg, a, b, c):
     reg[c] = reg[a] & b
     return reg
 
+
 def borr(reg, a, b, c):
     reg[c] = reg[a] | reg[b]
     return reg
+
 
 def bori(reg, a, b, c):
     reg[c] = reg[a] | b
     return reg
 
+
 def setr(reg, a, b, c):
     reg[c] = reg[a]
     return reg
+
 
 def seti(reg, a, b, c):
     reg[c] = a
     return reg
 
+
 def gtir(reg, a, b, c):
     reg[c] = 1 if a > reg[b] else 0
     return reg
+
 
 def gtri(reg, a, b, c):
     reg[c] = 1 if reg[a] > b else 0
     return reg
 
+
 def gtrr(reg, a, b, c):
     reg[c] = 1 if reg[a] > reg[b] else 0
     return reg
+
 
 def eqir(reg, a, b, c):
     reg[c] = 1 if a == reg[b] else 0
     return reg
 
+
 def eqri(reg, a, b, c):
     reg[c] = 1 if reg[a] == b else 0
     return reg
+
 
 def eqrr(reg, a, b, c):
     reg[c] = 1 if reg[a] == reg[b] else 0
     return reg
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Set the functions without params.
-    funs = [addr, addi, mulr, muli, banr, bani, borr, bori,
-            setr, seti, gtir, gtri, gtrr, eqir, eqri, eqrr]
+    funs = [
+        addr,
+        addi,
+        mulr,
+        muli,
+        banr,
+        bani,
+        borr,
+        bori,
+        setr,
+        seti,
+        gtir,
+        gtri,
+        gtrr,
+        eqir,
+        eqri,
+        eqrr,
+    ]
 
     # Iterate over the input.
     opcodes = dict()
     samples = dict()
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         sample = 0
         while True:
             x = file.readline()
 
             try:
-                if x[0] != 'B':
+                if x[0] != "B":
                     break
             except:
                 break
 
-            x = x.replace('Before: [', '').replace(']\n', '').split(', ')
-            y = file.readline().replace('\n', '').split(' ')
-            z = file.readline().replace('After:  [', '').replace(']\n', '').split(', ')
+            x = x.replace("Before: [", "").replace("]\n", "").split(", ")
+            y = file.readline().replace("\n", "").split(" ")
+            z = file.readline().replace("After:  [", "").replace("]\n", "").split(", ")
             _ = file.readline()
 
             x = [int(a) for a in x]
             y = [int(a) for a in y]
             z = [int(a) for a in z]
 
-            print(f'Opcode is {y[0]}.')
+            print(f"Opcode is {y[0]}.")
             if y[0] not in opcodes.keys():
                 opcodes[y[0]] = [set(), set()]
             samples[sample] = set()
@@ -183,7 +215,7 @@ if __name__ == '__main__':
         for _, value in samples.items():
             if len(value) > 2:
                 counter += 1
-        print(f'Answer 1 is {counter}.')
+        print(f"Answer 1 is {counter}.")
 
         # Delete counterexamples from examples.
         for k in opcodes.keys():
@@ -199,14 +231,13 @@ if __name__ == '__main__':
         for k in opcodes.keys():
             opcodes[k] = list(opcodes[k])[0]
 
-
         # Run the program.
         reg = [0, 0, 0, 0]
         done = False
         _ = file.readline()
         while True:
             x = file.readline()
-            x = x.replace('\n', '').split(' ')
+            x = x.replace("\n", "").split(" ")
 
             try:
                 x = [int(y) for y in x]
@@ -217,4 +248,4 @@ if __name__ == '__main__':
                     break
                 else:
                     continue
-        print(f'Answer 2 is {reg[0]}.')
+        print(f"Answer 2 is {reg[0]}.")

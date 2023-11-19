@@ -51,7 +51,7 @@ What is the ID of the only claim that doesn't overlap?
 """
 
 
-if __name__=='__main__':
+if __name__ == "__main__":
     # Create the cloth.
     size = 1100
     cloth = []
@@ -62,14 +62,16 @@ if __name__=='__main__':
         cloth.append(cloth_line)
 
     subcloths = []
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for line in file:
-            unsplit_line = line.replace(' @ ', ',')
-            unsplit_line = unsplit_line.replace(': ', ',')
-            unsplit_line = unsplit_line.replace('x', ',')
-            unsplit_line = unsplit_line.replace('\n', '')
-            split_line = [int(x) for x in unsplit_line.split(',')[1:]]
-            subcloths.append([split_line[0], split_line[1], split_line[2], split_line[3]])
+            unsplit_line = line.replace(" @ ", ",")
+            unsplit_line = unsplit_line.replace(": ", ",")
+            unsplit_line = unsplit_line.replace("x", ",")
+            unsplit_line = unsplit_line.replace("\n", "")
+            split_line = [int(x) for x in unsplit_line.split(",")[1:]]
+            subcloths.append(
+                [split_line[0], split_line[1], split_line[2], split_line[3]]
+            )
 
     # Loop over the subcloths.
     for subcloth in subcloths:
@@ -84,7 +86,7 @@ if __name__=='__main__':
         for j in range(0, size):
             if cloth[i][j] > 1:
                 counter += 1
-    print('Answer 1 is {}.'.format(counter))
+    print("Answer 1 is {}.".format(counter))
 
     # Find the ID of the subcloth that does not overlap with anything.
     for id, subcloth in enumerate(subcloths):
@@ -94,4 +96,4 @@ if __name__=='__main__':
                 if cloth[subcloth[0] + i][subcloth[1] + j] != 1:
                     found = False
         if found:
-            print('Answer 2 is {}'.format(value + 1))
+            print("Answer 2 is {}".format(value + 1))

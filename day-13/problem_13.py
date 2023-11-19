@@ -49,8 +49,10 @@ As it turns out, you got the Elves' plan backwards. They actually want to know h
 How many recipes appear on the scoreboard to the left of the score sequence in your puzzle input?
 """
 
+
 def check_string(last_n, length):
     from copy import copy
+
     cp = copy(last_n)
     ret_str = str(cp.value)
 
@@ -67,7 +69,7 @@ class Recipe:
         self.next = None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # The start is hardcoded.
     focus_1 = Recipe(3)
     focus_2 = Recipe(7)
@@ -75,7 +77,7 @@ if __name__ == '__main__':
     focus_2.next = focus_1
 
     # Read the input.
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         input = int(file.read())
 
     # Iterate.
@@ -105,8 +107,8 @@ if __name__ == '__main__':
         list_recipes.append(iter.value)
         iter = iter.next
     sublen = input + 10
-    answer = ''.join([str(x) for x in list_recipes[:sublen][-10:]])
-    print(f'Answer 1 is {answer}.')
+    answer = "".join([str(x) for x in list_recipes[:sublen][-10:]])
+    print(f"Answer 1 is {answer}.")
 
     # For part two we start fresh.
     focus_1 = Recipe(3)
@@ -163,4 +165,4 @@ if __name__ == '__main__':
             focus_2 = focus_2.next
 
     answer = recipe_cnt
-    print(f'Answer 2 is {recipe_cnt}.')
+    print(f"Answer 2 is {recipe_cnt}.")

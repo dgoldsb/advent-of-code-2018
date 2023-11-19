@@ -139,15 +139,16 @@ import re
 
 
 def recursive_parse(regex, path):
-    match = re.match('[NEWS]+', regex)
+    match = re.match("[NEWS]+", regex)
     if match:
-        
+        pass
 
     return paths
 
-if __name__ == '__main__':
-    with open('input', 'r') as file:
-        regex = file.read().replace('$', '').replace('^', '')
+
+if __name__ == "__main__":
+    with open("input", "r") as file:
+        regex = file.read().replace("$", "").replace("^", "")
 
     # Parse the regex bit by bit.
-    paths = recursive_parse(regex, '')
+    paths = recursive_parse(regex, "")

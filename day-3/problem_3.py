@@ -26,10 +26,10 @@ from datetime import datetime, timedelta
 import re
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Get the raw input.
     raw_input = []
-    with open('input', 'r') as file:
+    with open("input", "r") as file:
         for line in file:
             raw_input.append(line)
     raw_input.sort()
@@ -42,27 +42,29 @@ if __name__ == '__main__':
     falling_asleep_ts = None
 
     for line in raw_input:
-        raw_ts = re.search('(1518-[0-1][0-9]-[0-3][0-9] [0-9][0-9]:[0-9][0-9])', line).group(0)
-        ts = datetime.strptime(raw_ts, '%Y-%m-%d %H:%M')
+        raw_ts = re.search(
+            "(1518-[0-1][0-9]-[0-3][0-9] [0-9][0-9]:[0-9][0-9])", line
+        ).group(0)
+        ts = datetime.strptime(raw_ts, "%Y-%m-%d %H:%M")
 
         # Check for change of guard.
-        match = re.search('#[0-9]+', line)
+        match = re.search("#[0-9]+", line)
         if match:
-            current_guard = int(match.group(0).replace('#', ''))
+            current_guard = int(match.group(0).replace("#", ""))
             if current_guard not in list(sleeping_schedule.keys()):
                 sleeping_schedule[current_guard] = dict()
 
         # Check for falling asleep.
-        match = re.search('asleep', line)
+        match = re.search("asleep", line)
         if match:
             falling_asleep_ts = ts
 
         # Check for waking up.
-        match = re.search('wakes up', line)
+        match = re.search("wakes up", line)
         if match:
             # Add minutes to the falling asleep timestamp until it match the current.
-            while ts != falling_asleep_ts: # TODO: which minute does he wake?
-                minute = int(falling_asleep_ts.strftime('%M'))
+            while ts != falling_asleep_ts:  # TODO: which minute does he wake?
+                minute = int(falling_asleep_ts.strftime("%M"))
                 if minute not in list(sleeping_schedule[current_guard].keys()):
                     sleeping_schedule[current_guard][minute] = 1
                 else:
@@ -89,7 +91,13 @@ if __name__ == '__main__':
             sleepiest_minute[0] = key
             sleepiest_minute[1] = sleeping_schedule[sleepiest_guard[0]][key]
 
-    print('Answer 1 is {}*{}={}.'.format(sleepiest_guard[0], sleepiest_minute[0], sleepiest_guard[0] * sleepiest_minute[0]))
+    print(
+        "Answer 1 is {}*{}={}.".format(
+            sleepiest_guard[0],
+            sleepiest_minute[0],
+            sleepiest_guard[0] * sleepiest_minute[0],
+        )
+    )
 
     # Find the most consistently sleepy guard.
     sleepiest_consistent = [-1, -1, -1]
@@ -100,4 +108,10 @@ if __name__ == '__main__':
                 sleepiest_consistent[1] = minute
                 sleepiest_consistent[2] = sleeping_schedule[guard][minute]
 
-    print('Answer 2 is {}*{}={}.'.format(sleepiest_consistent[0], sleepiest_consistent[1], sleepiest_consistent[0]*sleepiest_consistent[1]))
+    print(
+        "Answer 2 is {}*{}={}.".format(
+            sleepiest_consistent[0],
+            sleepiest_consistent[1],
+            sleepiest_consistent[0] * sleepiest_consistent[1],
+        )
+    )
