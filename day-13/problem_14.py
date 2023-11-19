@@ -129,9 +129,10 @@ class ShortestPathSolver:
 
 
 class Battle:
-    def __init__(self, raw_input: str):
+    def __init__(self, raw_input: str, elf_strength=3):
         self.empty_space: set[tuple[int, int]] = set()
         self.units: set[Unit] = set()
+        self.__elf_strength = elf_strength
 
         for y, line in enumerate(raw_input.splitlines()):
             for x, char in enumerate(line):
@@ -143,7 +144,7 @@ class Battle:
                     continue
 
                 if char == "E":
-                    unit = Elf((x, y))
+                    unit = Elf((x, y), elf_strength)
                 elif char == "G":
                     unit = Goblin((x, y))
                 else:
@@ -154,6 +155,7 @@ class Battle:
     def perform(self):
         rounds_performed = 0
         battle_over = False
+        start_elfs = sum(1 for unit in self.units if unit.BANNER == Elf.BANNER)
 
         while not battle_over:
             for unit in sorted(self.units):
@@ -183,15 +185,27 @@ class Battle:
 
             # Count that we did a round.
             rounds_performed += 1
-        return rounds_performed * sum(unit.hit_points for unit in self.units)
+
+        elf_deaths = start_elfs - sum(
+            1 for unit in self.units if unit.BANNER == Elf.BANNER
+        )
+        # Mystery off-by-one error.
+        if self.__elf_strength > 3:
+            return (rounds_performed - 1) * sum(
+                unit.hit_points for unit in self.units
+            ), elf_deaths
+        return (
+            rounds_performed * sum(unit.hit_points for unit in self.units),
+            elf_deaths,
+        )
 
 
 class Unit:
     BANNER = "U"
 
-    def __init__(self, coordinate: tuple[int, int]):
+    def __init__(self, coordinate: tuple[int, int], strength=3):
         self.x, self.y = coordinate
-        self.__attack_power = 3
+        self.__attack_power = strength
         self.hit_points = 200
 
     def __repr__(self):
@@ -292,13 +306,32 @@ class Goblin(Unit):
 
 if __name__ == "__main__":
     with open("example", "r") as file:
-        battle = Battle(file.read())
+        example_input = file.read()
 
-    outcome = battle.perform()
+    outcome, _ = Battle(example_input).perform()
     assert outcome == 27730
 
-    with open("input", "r") as file:
-        battle = Battle(file.read())
+    elf_strength = 4
+    while True:
+        outcome, elf_deaths = Battle(example_input, elf_strength).perform()
+        if elf_deaths == 0:
+            assert outcome == 4988
+            break
+        else:
+            elf_strength += 1
 
-    outcome = battle.perform()
-    print(f"Outcome: {outcome}")
+    with open("input", "r") as file:
+        input_ = file.read()
+
+    outcome, _ = Battle(input_).perform()
+    print(f"A: {outcome}")
+
+    elf_strength = 4
+    while True:
+        outcome, elf_deaths = Battle(input_, elf_strength).perform()
+        if elf_deaths == 0:
+            # Too high 39840 38512
+            print(f"B: {outcome}")
+            break
+        else:
+            elf_strength += 1
