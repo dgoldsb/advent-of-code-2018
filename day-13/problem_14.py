@@ -158,19 +158,25 @@ class Battle:
         start_elfs = sum(1 for unit in self.units if unit.BANNER == Elf.BANNER)
 
         while not battle_over:
+            debug = sorted(self.units)
             for unit in sorted(self.units):
-                if unit.dead:
-                    continue
+                if not unit.dead:
+                    # Determine targets.
+                    targets = list(
+                        filter(lambda u: u.BANNER != unit.BANNER, self.units)
+                    )
 
-                # Determine targets.
-                targets = list(filter(lambda u: u.BANNER != unit.BANNER, self.units))
+                    # Check if battle is over.
+                    for banner in [Elf.BANNER, Goblin.BANNER]:
+                        if all(unit.BANNER == banner for unit in self.units):
+                            battle_over = True
 
-                # Perform a turn.
-                old_position = (unit.x, unit.y)
-                new_position = unit.turn(targets, self.empty_space)
-                if new_position in self.empty_space:
-                    self.empty_space.remove(new_position)
-                    self.empty_space.add(old_position)
+                    # Perform a turn.
+                    old_position = (unit.x, unit.y)
+                    new_position = unit.turn(targets, self.empty_space)
+                    if new_position in self.empty_space:
+                        self.empty_space.remove(new_position)
+                        self.empty_space.add(old_position)
 
                 # Remove dead units.
                 for unit_ in copy(self.units):
@@ -178,24 +184,14 @@ class Battle:
                         self.units.remove(unit_)
                         self.empty_space.add((unit_.x, unit_.y))
 
-            # Check if battle is over.
-            for banner in [Elf.BANNER, Goblin.BANNER]:
-                if all(unit.BANNER == banner for unit in self.units):
-                    battle_over = True
-
             # Count that we did a round.
             rounds_performed += 1
 
         elf_deaths = start_elfs - sum(
             1 for unit in self.units if unit.BANNER == Elf.BANNER
         )
-        # Mystery off-by-one error.
-        if self.__elf_strength > 3:
-            return (rounds_performed - 1) * sum(
-                unit.hit_points for unit in self.units
-            ), elf_deaths
         return (
-            rounds_performed * sum(unit.hit_points for unit in self.units),
+            (rounds_performed - 1) * sum(unit.hit_points for unit in self.units),
             elf_deaths,
         )
 
@@ -330,7 +326,6 @@ if __name__ == "__main__":
     while True:
         outcome, elf_deaths = Battle(input_, elf_strength).perform()
         if elf_deaths == 0:
-            # Too high 39840 38512
             print(f"B: {outcome}")
             break
         else:
