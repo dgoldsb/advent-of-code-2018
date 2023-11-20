@@ -107,16 +107,11 @@ def solve(
         states.append(state)
 
         if state in state_values:
-
-            def _get_value(index_: int) -> int:
-                cycle_start = states.index(state)
-                cycle_length = len(states) - cycle_start - 1
-                target_in_cycle = (index_ - cycle_start) % cycle_length
-                return state_values[states[cycle_start + target_in_cycle]]
-
-            assert _get_value(minute) == state_values[state]
-            # 163494 too low 190518 too high, 185885 too high
-            return _get_value(minutes)
+            index_ = minutes - 1
+            cycle_start = states.index(state)
+            cycle_length = len(states) - cycle_start - 1
+            target_in_cycle = (index_ - cycle_start) % cycle_length
+            return state_values[states[cycle_start + target_in_cycle]]
 
         state_values[state] = len(trees) * len(lumberyards)
 
