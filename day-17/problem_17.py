@@ -15,9 +15,17 @@ In particular:
 
 These changes happen across all acres simultaneously, each of them using the state of all acres at the beginning of the minute and changing to their new form by the end of that same minute. Changes that happen during the minute don't affect each other.
 """
+from typing import Generator, Sequence
 
-from copy import copy
-from typing import Generator
+
+def detect_cycle(sequence: Sequence[int]) -> tuple[int, int]:
+    """Detects a cycle in a sequence."""
+    seen = {}
+    for i, item in enumerate(sequence):
+        if item in seen:
+            return seen[item], i
+        seen[item] = i
+    return 0, 0
 
 
 def adjacent_slots(x: int, y: int) -> Generator[tuple[int, int], None, None]:
@@ -53,7 +61,10 @@ def solve(
     minutes: int,
 ) -> int:
     """Solution to part one."""
-    for _ in range(minutes):
+    states = []
+    state_values = {}
+
+    for minute in range(minutes):
         new_trees = set()
         new_lumberyards = set()
         new_open_ground = set()
@@ -92,7 +103,24 @@ def solve(
         lumberyards = new_lumberyards
         open_ground = new_open_ground
 
-    return len(trees) * len(lumberyards)
+        state = hash(tuple(sorted(trees)) + tuple(sorted(lumberyards)))
+        states.append(state)
+
+        if state in state_values:
+
+            def _get_value(index_: int) -> int:
+                cycle_start = states.index(state)
+                cycle_length = len(states) - cycle_start - 1
+                target_in_cycle = (index_ - cycle_start) % cycle_length
+                return state_values[states[cycle_start + target_in_cycle]]
+
+            assert _get_value(minute) == state_values[state]
+            # 163494 too low 190518 too high, 185885 too high
+            return _get_value(minutes)
+
+        state_values[state] = len(trees) * len(lumberyards)
+
+    return state_values[states[-1]]
 
 
 with open("example") as f:
