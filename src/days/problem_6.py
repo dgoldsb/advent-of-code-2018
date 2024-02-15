@@ -1,5 +1,3 @@
-import heapq
-
 from src.day_protocol import AocDay
 from src.space.point import Point
 

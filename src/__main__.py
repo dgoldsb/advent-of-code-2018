@@ -18,10 +18,13 @@ def get_input(day_number_: int) -> str:
 
 
 if __name__ == "__main__":
-    for day_number in range(1, 7):
-        day: AocDay = dynamic_object_import(
-            f"days.problem_{day_number}", f"Day{day_number}"
-        )()
+    for day_number in range(16, 26):
+        try:
+            day: AocDay = dynamic_object_import(
+                f"days.problem_{day_number}", f"Day{day_number}"
+            )()
+        except TypeError:
+            continue
         input_ = get_input(day_number)
         print(f"Day {day_number}a: {day.part_a(input_)}")
         print(f"Day {day_number}b: {day.part_b(input_)}")

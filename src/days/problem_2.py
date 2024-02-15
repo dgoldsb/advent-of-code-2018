@@ -17,8 +17,7 @@ class Day2(AocDay):
     def _parse(input_: str):
         values = []
         for row in input_.split("\n"):
-            if row:
-                values.append(row)
+            values.append(row)
         return values
 
     def part_a(self, input_: str) -> str:

@@ -6,8 +6,7 @@ class Day1(AocDay):
     def _parse(input_: str):
         values = []
         for row in input_.split("\n"):
-            if row:
-                values.append(int(row))
+            values.append(int(row))
         return values
 
     def part_a(self, input_: str) -> str:
